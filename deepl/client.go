@@ -2,6 +2,7 @@ package deepl
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -47,6 +48,10 @@ func (c *deeplClient) Translate(text string, sourceLanguage string, targetLangua
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return TranslationResponse{}, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return TranslationResponse{}, errors.New("failed to translate text, status code: " + res.Status)
 	}
 
 	println(res.Status)
