@@ -9,13 +9,13 @@ import (
 	"strings"
 )
 
-type deeplClient struct {
+type Client struct {
 	httpClient *http.Client
 	apiKey     string
 }
 
-func NewClient(apiKey string) *deeplClient {
-	return &deeplClient{
+func NewClient(apiKey string) *Client {
+	return &Client{
 		httpClient: &http.Client{},
 		apiKey:     apiKey,
 	}
@@ -30,14 +30,13 @@ type Translation struct {
 	Text                   string `json:"text"`
 }
 
-func (c *deeplClient) Translate(text string, sourceLanguage string, targetLanguage string) (TranslationResponse, error) {
+func (c *Client) Translate(text string, sourceLanguage string, targetLanguage string) (TranslationResponse, error) {
 	data := url.Values{
 		"text":        {text},
 		"target_lang": {targetLanguage},
 	}
 
 	encoded := data.Encode()
-	println(encoded)
 	req, err := http.NewRequest("POST", "https://api-free.deepl.com/v2/translate", strings.NewReader(encoded))
 	if err != nil {
 		return TranslationResponse{}, err
@@ -53,8 +52,6 @@ func (c *deeplClient) Translate(text string, sourceLanguage string, targetLangua
 	if res.StatusCode != http.StatusOK {
 		return TranslationResponse{}, errors.New("failed to translate text, status code: " + res.Status)
 	}
-
-	println(res.Status)
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
