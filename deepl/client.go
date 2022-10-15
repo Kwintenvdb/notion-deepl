@@ -30,10 +30,11 @@ type Translation struct {
 	Text                   string `json:"text"`
 }
 
-func (c *Client) Translate(text string, sourceLanguage string, targetLanguage string) (TranslationResponse, error) {
+func (c *Client) Translate(text, sourceLanguage, targetLanguage, formality string) (TranslationResponse, error) {
 	data := url.Values{
 		"text":        {text},
 		"target_lang": {targetLanguage},
+		"formality":   {formality},
 	}
 
 	encoded := data.Encode()

@@ -13,6 +13,7 @@ type TranslationArgs struct {
 	SourceLanguage string
 	TargetLanguage string
 	BlockId        string
+	Formality      string
 }
 
 type Translator interface {
@@ -35,6 +36,14 @@ func (t *notionDeeplTranslator) Translate(args TranslationArgs) error {
 
 	if args.SourceLanguage == args.TargetLanguage {
 		return errors.New("source and target language are the same")
+	}
+
+	if args.Formality != "default" &&
+		args.Formality != "more" &&
+		args.Formality != "less" &&
+		args.Formality != "prefer_more" &&
+		args.Formality != "prefer_less" {
+		return errors.New("invalid formality, must be one of: default, more, less, prefer_more, prefer_less")
 	}
 
 	// A little slow, but parallelizing this makes the Notion API return 409 responses
@@ -122,7 +131,7 @@ func (t *notionDeeplTranslator) translateRichText(richText []notion.RichText, ar
 }
 
 func (t *notionDeeplTranslator) translateText(text string, args TranslationArgs) (string, error) {
-	translated, err := t.deeplClient.Translate(text, args.SourceLanguage, args.TargetLanguage)
+	translated, err := t.deeplClient.Translate(text, args.SourceLanguage, args.TargetLanguage, args.Formality)
 	if err != nil {
 		return "", err
 	}

@@ -23,12 +23,19 @@ var rootCmd = &cobra.Command{
 			NotionApiKey: notionApiKey,
 		})
 
-		sourceLanguage, _ := cmd.PersistentFlags().GetString("source-language")
-		targetLanguage, _ := cmd.PersistentFlags().GetString("target-language")
+		getFlag := func(flagName string) string {
+			flag, _ := cmd.PersistentFlags().GetString(flagName)
+			return flag
+		}
+
+		sourceLanguage := getFlag("source-language")
+		targetLanguage := getFlag("target-language")
+		formality := getFlag("formality")
 		err := t.Translate(translator.TranslationArgs{
 			SourceLanguage: sourceLanguage,
 			TargetLanguage: targetLanguage,
 			BlockId:        blockId,
+			Formality:      formality,
 		})
 		if err != nil {
 			fmt.Println(err.Error())
@@ -62,4 +69,6 @@ func init() {
 	rootCmd.PersistentFlags().StringP("source-language", "s", "", "The source language (optional: will be automatically detected for each block if not specified)")
 	rootCmd.PersistentFlags().StringP("target-language", "t", "", "The target language (required)")
 	rootCmd.MarkFlagRequired("target-language")
+
+	rootCmd.PersistentFlags().StringP("formality", "f", "default", "The formality of the translation (options: default, more, less, prefer_more, prefer_less)")
 }

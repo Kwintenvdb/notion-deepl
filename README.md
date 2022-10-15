@@ -24,7 +24,6 @@ This tool was developed mostly for personal usage. As a result, several limitati
 * Formatting and rich text markup are mostly not preserved.
 * Databases cannot be translated, though individual database pages can be.
 * Tables cannot be translated.
-* No support yet for DeepL's language formality options.
 * Blocks are currently translated in sequence. This may be further optimized in the future, but is currently limited by Notion's rate-limiting.
 
 # Usage
@@ -38,6 +37,7 @@ Usage:
 Flags:
   -b, --block-id string          The Notion block ID to translate (required)
   -d, --deepl-api-key string     DeepL API key (required: if not provided, the DEEPL_API_KEY environment variable will be used)
+  -f, --formality string         The formality of the translation (options: default, more, less, prefer_more, prefer_less) (default "default")
   -h, --help                     help for notion-deepl
   -n, --notion-api-key string    Notion API key (required: if not provided, the NOTION_API_KEY environment variable will be used)
   -s, --source-language string   The source language (optional: will be automatically detected for each block if not specified)
@@ -57,11 +57,12 @@ The page you want to translate (or blocks within this page) must be connected to
 notion-deepl --source-language=EN --target-language=NL --block-id=91ada48a2a3b4a939f5e1f0e510c4d3d
 ```
 
-#### Translate a page by specifying API keys via the CLI
+#### Translate a page by specifying API keys and formality via the CLI
 ```sh
 notion-deepl --notion-api-key=[YOUR NOTION API KEY]
     --deepl-api-key=[YOUR DEEPL API KEY]
     --source-language=EN
     --target-language=NL
     --block-id=91ada48a2a3b4a939f5e1f0e510c4d3d
+    --formality=prefer_less
 ```
