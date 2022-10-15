@@ -50,16 +50,16 @@ func init() {
 		viper.BindEnv("NOTION_API_KEY")
 	})
 
-	rootCmd.PersistentFlags().String("deepl-api-key", "", "DeepL API key (required: if not provided, the DEEPL_API_KEY environment variable will be used)")
+	rootCmd.PersistentFlags().StringP("deepl-api-key", "d", "", "DeepL API key (required: if not provided, the DEEPL_API_KEY environment variable will be used)")
 	viper.BindPFlag("DEEPL_API_KEY", rootCmd.PersistentFlags().Lookup("deepl-api-key"))
 
-	rootCmd.PersistentFlags().String("notion-api-key", "", "Notion API key (required: if not provided, the NOTION_API_KEY environment variable will be used)")
+	rootCmd.PersistentFlags().StringP("notion-api-key", "n", "", "Notion API key (required: if not provided, the NOTION_API_KEY environment variable will be used)")
 	viper.BindPFlag("NOTION_API_KEY", rootCmd.PersistentFlags().Lookup("notion-api-key"))
 
-	rootCmd.PersistentFlags().String("block-id", "", "The Notion block ID to translate (required)")
+	rootCmd.PersistentFlags().StringP("block-id", "b", "", "The Notion block ID to translate (required)")
 	rootCmd.MarkFlagRequired("block-id")
 
-	rootCmd.PersistentFlags().String("source-language", "", "The source language (optional: will be automatically detected for each block if not specified)")
-	rootCmd.PersistentFlags().String("target-language", "", "The target language (required)")
+	rootCmd.PersistentFlags().StringP("source-language", "s", "", "The source language (optional: will be automatically detected for each block if not specified)")
+	rootCmd.PersistentFlags().StringP("target-language", "t", "", "The target language (required)")
 	rootCmd.MarkFlagRequired("target-language")
 }
