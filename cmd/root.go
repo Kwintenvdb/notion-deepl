@@ -1,0 +1,65 @@
+package cmd
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/Kwintenvdb/notion-deepl/translator"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+var rootCmd = &cobra.Command{
+	Use:   "notion-deepl",
+	Short: "A CLI tool to translate Notion pages using DeepL",
+	Run: func(cmd *cobra.Command, args []string) {
+		blockId, _ := cmd.PersistentFlags().GetString("block-id")
+
+		deeplApiKey := viper.GetString("DEEPL_API_KEY")
+		notionApiKey := viper.GetString("NOTION_API_KEY")
+
+		t := translator.NewTranslator(translator.TranslatorOptions{
+			DeeplApiKey:  deeplApiKey,
+			NotionApiKey: notionApiKey,
+		})
+
+		sourceLanguage, _ := cmd.PersistentFlags().GetString("source-language")
+		targetLanguage, _ := cmd.PersistentFlags().GetString("target-language")
+		err := t.Translate(translator.TranslationArgs{
+			SourceLanguage: sourceLanguage,
+			TargetLanguage: targetLanguage,
+			BlockId:        blockId,
+		})
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+	},
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
+
+func init() {
+	cobra.OnInitialize(func() {
+		viper.BindEnv("DEEPL_API_KEY")
+		viper.BindEnv("NOTION_API_KEY")
+	})
+
+	rootCmd.PersistentFlags().String("deepl-api-key", "", "DeepL API key (required: if not provided, the DEEPL_API_KEY environment variable will be used)")
+	viper.BindPFlag("DEEPL_API_KEY", rootCmd.PersistentFlags().Lookup("deepl-api-key"))
+
+	rootCmd.PersistentFlags().String("notion-api-key", "", "Notion API key (required: if not provided, the NOTION_API_KEY environment variable will be used)")
+	viper.BindPFlag("NOTION_API_KEY", rootCmd.PersistentFlags().Lookup("notion-api-key"))
+
+	rootCmd.PersistentFlags().String("block-id", "", "The Notion block ID to translate (required)")
+	rootCmd.MarkFlagRequired("block-id")
+
+	rootCmd.PersistentFlags().String("source-language", "", "The source language (optional: will be automatically detected for each block if not specified)")
+	rootCmd.PersistentFlags().String("target-language", "", "The target language (required)")
+	rootCmd.MarkFlagRequired("target-language")
+}

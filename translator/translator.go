@@ -16,7 +16,7 @@ type TranslationArgs struct {
 }
 
 type Translator interface {
-	Translate(args TranslationArgs) (string, error)
+	Translate(args TranslationArgs) error
 }
 
 type notionDeeplTranslator struct {
@@ -24,28 +24,24 @@ type notionDeeplTranslator struct {
 	notionClient *notion.Client
 }
 
-func (t *notionDeeplTranslator) Translate(args TranslationArgs) (string, error) {
-	if args.SourceLanguage == "" {
-		return "", errors.New("source language is required")
-	}
-
+func (t *notionDeeplTranslator) Translate(args TranslationArgs) error {
 	if args.TargetLanguage == "" {
-		return "", errors.New("target language is required")
+		return errors.New("target language is required")
 	}
 
 	if args.BlockId == "" {
-		return "", errors.New("block id is required")
+		return errors.New("block id is required")
 	}
 
 	if args.SourceLanguage == args.TargetLanguage {
-		return "", errors.New("source and target language are the same")
+		return errors.New("source and target language are the same")
 	}
 
 	// A little slow, but parallelizing this makes the Notion API return 409 responses
 	rootBlock := recursivelyRetrieveChildBlocks(t.notionClient, args.BlockId)
 	t.recursivelyTranslateBlocks(rootBlock, args)
 
-	return "", nil
+	return nil
 }
 
 type TranslatorOptions struct {
